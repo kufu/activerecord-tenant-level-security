@@ -1,8 +1,8 @@
 module TenantLevelSecurity::Sidekiq::Middleware
   class Client
     def call(worker_class, job, queue, redis_pool)
-      if TenantLevelSecurity.current_tenant_id.present?
-        job['tenant_level_security'] ||= { id: TenantLevelSecurity.current_tenant_id }
+      if TenantLevelSecurity.current_session_tenant_id.present?
+        job['tenant_level_security'] ||= { id: TenantLevelSecurity.current_session_tenant_id }
       end
 
       yield
