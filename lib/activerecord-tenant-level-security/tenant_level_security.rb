@@ -2,6 +2,7 @@ module TenantLevelSecurity
   class << self
     def with(tenant_id)
       old_tenant_id = current_tenant_id
+      return yield if old_tenant_id == tenant_id
       begin
         switch! tenant_id
         yield
@@ -10,28 +11,12 @@ module TenantLevelSecurity
       end
     end
 
-    def without
-      old_tenant_id = current_tenant_id
-      begin
-        disable!
-        yield
-      ensure
-        switch! old_tenant_id
-      end
-    end
-
     def switch!(tenant_id)
-      ActiveRecord::Base.connection.execute('SET tenant_level_security.disable TO DEFAULT')
       if tenant_id.present?
         ActiveRecord::Base.connection.execute("SET tenant_level_security.tenant_id = '#{tenant_id}'")
       else
         ActiveRecord::Base.connection.execute('SET tenant_level_security.tenant_id TO DEFAULT')
       end
-    end
-
-    def disable!
-      ActiveRecord::Base.connection.execute('SET tenant_level_security.disable = true')
-      ActiveRecord::Base.connection.execute('SET tenant_level_security.tenant_id TO DEFAULT')
     end
 
     def current_tenant_id
