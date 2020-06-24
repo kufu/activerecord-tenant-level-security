@@ -3,8 +3,9 @@ module TenantLevelSecurity
     module Middleware
       class Client
         def call(worker_class, job, queue, redis_pool)
-          if TenantLevelSecurity.current_session_tenant_id.present?
-            job['tenant_level_security'] ||= { id: TenantLevelSecurity.current_session_tenant_id }
+          tenant_id = TenantLevelSecurity.current_session_tenant_id
+          if tenant_id.present?
+            job['tenant_level_security'] ||= { id: tenant_id }
           end
 
           yield
