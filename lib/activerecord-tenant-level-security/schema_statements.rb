@@ -1,5 +1,5 @@
 module TenantLevelSecurity
-  module MigrationExtensions
+  module SchemaStatements
     def create_policy(table_name)
       execute <<~SQL
         ALTER TABLE #{table_name} ENABLE ROW LEVEL SECURITY;
