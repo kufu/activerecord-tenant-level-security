@@ -1,5 +1,9 @@
 module TenantLevelSecurity
   class << self
+    # The current_tenant_id sets the default tenant from the outside.
+    # Be sure to register in advance as `TenantLevelSecurity.current_tenant_id { id }` with initializers.
+    # This value is mainly used as the current value when reusing a connection.
+    # Therefore, keep in mind that you need to manage it differently from the session value in the database.
     def current_tenant_id(&block)
       if block_given?
         @@block = block

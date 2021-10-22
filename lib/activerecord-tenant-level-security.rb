@@ -9,6 +9,9 @@ require_relative 'activerecord-tenant-level-security/sidekiq'
 ActiveSupport.on_load(:active_record) do
   ActiveRecord::ConnectionAdapters::AbstractAdapter.include TenantLevelSecurity::SchemaStatements
 
+  # Set the callback so that a session will be set to the current tenant when a connection is reused.
+  # Make sure that TenantLevelSecurity.current_tenant_id does not depend on database connections.
+  # If a new connection is needed to get the current_tenant_id, the callback may be invoked recursively.
   ActiveRecord::ConnectionAdapters::AbstractAdapter.set_callback :checkout, :after do |conn|
     TenantLevelSecurity.switch_with_connection!(conn, TenantLevelSecurity.current_tenant_id)
   end
