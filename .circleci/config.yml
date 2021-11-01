@@ -1,0 +1,32 @@
+version: 2.1
+
+jobs:
+  test:
+    parameters:
+      ruby:
+        type: string
+      rails:
+        type: string
+      postgres:
+        type: string
+    docker:
+      - image: << parameters.ruby >>
+      - image: circleci/<< parameters.postgres >>
+        environment:
+          POSTGRES_HOST_AUTH_METHOD: trust
+    steps:
+      - checkout
+      - run: gem install bundler
+      - run: bundle install
+      - run: bundle exec appraisal << parameters.rails >> bundle install
+      - run: bundle exec appraisal << parameters.rails >> rspec
+
+workflows:
+  all-tests:
+    jobs:
+      - test:
+          matrix:
+            parameters:
+              ruby: ['ruby:2.7.4', 'ruby:3.0.2']
+              rails: ['rails-6.0', 'rails-6.1']
+              postgres: ['postgres:11', 'postgres:12', 'postgres:13']
