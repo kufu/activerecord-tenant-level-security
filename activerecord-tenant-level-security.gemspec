@@ -5,8 +5,8 @@ require "activerecord-tenant-level-security/version"
 Gem::Specification.new do |spec|
   spec.name          = "activerecord-tenant-level-security"
   spec.version       = TenantLevelSecurity::VERSION
-  spec.authors       = ["wata727"]
-  spec.email         = ["watassbass@gmail.com"]
+  spec.authors       = ["SmartHR"]
+  spec.email         = ["dev@smarthr.co.jp"]
 
   spec.summary       = %q{An Active Record extension for Multitenancy with PostgreSQL Row Level Security}
   spec.description   = %q{An Active Record extension for Multitenancy with PostgreSQL Row Level Security}
@@ -22,8 +22,6 @@ Gem::Specification.new do |spec|
   spec.files         = Dir.chdir(File.expand_path('..', __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   end
-  spec.bindir        = "exe"
-  spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
   spec.add_dependency "activerecord", ">= 6.0"
