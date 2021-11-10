@@ -3,12 +3,14 @@ require 'active_record'
 require 'pg'
 
 require_relative 'activerecord-tenant-level-security/tenant_level_security'
+require_relative 'activerecord-tenant-level-security/command_recorder'
 require_relative 'activerecord-tenant-level-security/schema_dumper'
 require_relative 'activerecord-tenant-level-security/schema_statements'
 require_relative 'activerecord-tenant-level-security/sidekiq'
 
 ActiveSupport.on_load(:active_record) do
   ActiveRecord::ConnectionAdapters::AbstractAdapter.include TenantLevelSecurity::SchemaStatements
+  ActiveRecord::Migration::CommandRecorder.include TenantLevelSecurity::CommandRecorder
   ActiveRecord::SchemaDumper.prepend TenantLevelSecurity::SchemaDumper
 
   # Set the callback so that a session will be set to the current tenant when a connection is reused.
