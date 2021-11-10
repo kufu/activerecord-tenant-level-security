@@ -1,4 +1,7 @@
 # activerecord-tenant-level-security
+[![CircleCI](https://circleci.com/gh/kufu/activerecord-tenant-level-security/tree/master.svg?style=svg)](https://circleci.com/gh/kufu/activerecord-tenant-level-security/tree/master)
+[![gem-version](https://img.shields.io/gem/v/activerecord-tenant-level-security.svg)](https://rubygems.org/gems/activerecord-tenant-level-security)
+[![License](https://img.shields.io/github/license/kufu/activerecord-tenant-level-security.svg?color=blue)](https://github.com/kufu/activerecord-tenant-level-security/blob/master/LICENSE.txt)
 
 An Active Record extension for Multitenancy with PostgreSQL Row Level Security.
 
