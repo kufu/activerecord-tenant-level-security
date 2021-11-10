@@ -8,7 +8,7 @@ RSpec.describe TenantLevelSecurity::CommandRecorder do
       expect(recorder.commands).to eq([[:create_policy, [:accounts], nil]])
     end
 
-    it "reverts remove_policy" do
+    it "reverts create_policy" do
       recorder.revert { recorder.create_policy(:accounts) }
 
       expect(recorder.commands).to eq([[:remove_policy, [:accounts]]])
