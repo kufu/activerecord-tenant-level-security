@@ -11,7 +11,7 @@ jobs:
         type: string
     docker:
       - image: << parameters.ruby >>
-      - image: circleci/<< parameters.postgres >>
+      - image: cimg/<< parameters.postgres >>
         environment:
           POSTGRES_HOST_AUTH_METHOD: trust
     steps:
@@ -27,6 +27,6 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby: ['ruby:2.7.4', 'ruby:3.0.2']
-              rails: ['rails-6.0', 'rails-6.1']
-              postgres: ['postgres:11', 'postgres:12', 'postgres:13']
+              ruby: ['ruby:2.7', 'ruby:3.0', 'ruby:3.1']
+              rails: ['rails-6.0', 'rails-6.1', 'rails-7.0']
+              postgres: ['postgres:11.13', 'postgres:12.9', 'postgres:13.5', 'postgres:14.1']
