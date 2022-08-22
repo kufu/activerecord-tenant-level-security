@@ -60,7 +60,7 @@ When testing, be aware of the database user you are connecting to. The default u
 If you want to use this gem, you first need to register a callback which gets the current tenant. This callback is invoked when checking out a new connection from a connection pool. Create an initializer and tell how it should resolve the current tenant like the following:
 
 ```ruby
-TenantLevelSecuriy.current_tenant_id { RequestStore.store[:current_tenant_id] }
+TenantLevelSecurity.current_tenant_id { RequestStore.store[:current_tenant_id] }
 ```
 
 The above is an example of getting the current tenant stored using [RequestStore](https://github.com/steveklabnik/request_store). You are responsible for storing the current tenant, such as at the beginning of the request.
@@ -68,7 +68,7 @@ The above is an example of getting the current tenant stored using [RequestStore
 We strongly recommend using the [activerecord-multi-tenant](https://github.com/citusdata/activerecord-multi-tenant) for this config. activerecord-multi-tenant provides multi-tenant data isolation at the application layer by rewriting queries. On the other hand, this gem provides the isolation at the database layer by RLS. Multi-layered security is important.
 
 ```ruby
-TenantLevelSecuriy.current_tenant_id { MultiTenant.current_tenant_id }
+TenantLevelSecurity.current_tenant_id { MultiTenant.current_tenant_id }
 ```
 
 Do not query the database in this callback. As mentioned above, this callback is invoked at checking out a connection, so it may be called recursively.
@@ -90,7 +90,7 @@ In the table in which the policy is created, only the rows that match the curren
 
 ```ruby
 # Set default tenant to "tenant2"
-TenantLevelSecuriy.current_tenant_id { tenant2.id }
+TenantLevelSecurity.current_tenant_id { tenant2.id }
 
 TenantLevelSecurity.with(tenant1.id) do # => SET tenant_level_security.tenant_id = '1'
   Employee.pluck(:name)
