@@ -28,6 +28,8 @@ module TenantLevelSecurity
     end
 
     def switch_with_connection!(conn, tenant_id)
+      conn.clear_query_cache
+
       if tenant_id.present?
         conn.execute("SET tenant_level_security.tenant_id = '#{tenant_id}'")
       else
