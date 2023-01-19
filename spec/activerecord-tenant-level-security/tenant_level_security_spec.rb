@@ -22,6 +22,20 @@ RSpec.describe TenantLevelSecurity do
       TenantLevelSecurity.switch!(tenant2.id)
       expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
     end
+
+    context 'with query cache' do
+      it 'clears query cache after switching' do
+        establish_connection(as: :app)
+
+        Employee.connection.enable_query_cache!
+
+        TenantLevelSecurity.switch!(tenant1.id)
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+
+        TenantLevelSecurity.switch!(tenant2.id)
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
+      end
+    end
   end
 
   describe '.with' do
@@ -47,6 +61,23 @@ RSpec.describe TenantLevelSecurity do
 
       # Back to tenant1
       expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+    end
+
+    context 'with query cache' do
+      it 'clears query cache after switching' do
+        establish_connection(as: :app)
+
+        Employee.connection.enable_query_cache!
+
+        TenantLevelSecurity.switch!(tenant1.id)
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+
+        TenantLevelSecurity.with(tenant2.id) do
+          expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
+        end
+
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+      end
     end
   end
 
