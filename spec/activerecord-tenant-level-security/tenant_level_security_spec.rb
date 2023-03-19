@@ -1,26 +1,49 @@
 RSpec.describe TenantLevelSecurity do
   let(:tenant1) { Tenant.create!(name: 'Tenant1') }
   let(:tenant2) { Tenant.create!(name: 'Tenant2') }
+  let(:uuid_tenant1) { UUIDTenant.create!(name: 'Tenant3') }
+  let(:uuid_tenant2) { UUIDTenant.create!(name: 'Tenant4') }
 
   before do
     Employee.create!(name: 'Jane', tenant: tenant1)
     Employee.create!(name: 'Tom', tenant: tenant2)
+    UUIDEmployee.create!(name: 'Kenny', tenant: uuid_tenant1)
+    UUIDEmployee.create!(name: 'Wendy', tenant: uuid_tenant2)
   end
 
   describe '.switch!' do
-    it 'returns only employees in the switched tenant' do
-      expect(Employee.count).to eq 2
+    context 'with integer tenant_id' do
+      it 'returns only employees in the switched tenant' do
+        expect(Employee.count).to eq 2
 
-      establish_connection(as: :app)
+        establish_connection(as: :app)
 
-      # Nothing is allowed by default
-      expect(Employee.count).to eq 0
+        # Nothing is allowed by default
+        expect(Employee.count).to eq 0
 
-      TenantLevelSecurity.switch!(tenant1.id)
-      expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+        TenantLevelSecurity.switch!(tenant1.id)
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
 
-      TenantLevelSecurity.switch!(tenant2.id)
-      expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
+        TenantLevelSecurity.switch!(tenant2.id)
+        expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
+      end
+    end
+
+    context 'with uuid tenant_id' do
+      it 'returns only employees in the switched tenant' do
+        expect(UUIDEmployee.count).to eq 2
+
+        establish_connection(as: :app)
+
+        # Nothing is allowed by default
+        expect(UUIDEmployee.count).to eq 0
+
+        TenantLevelSecurity.switch!(uuid_tenant1.id)
+        expect(UUIDEmployee.all).to contain_exactly(have_attributes(name: 'Kenny'))
+
+        TenantLevelSecurity.switch!(uuid_tenant2.id)
+        expect(UUIDEmployee.all).to contain_exactly(have_attributes(name: 'Wendy'))
+      end
     end
 
     context 'with query cache' do
