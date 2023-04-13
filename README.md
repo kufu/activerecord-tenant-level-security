@@ -82,8 +82,8 @@ CREATE POLICY tenant_policy ON employees
   AS PERMISSIVE
   FOR ALL
   TO PUBLIC
-  USING (tenant_id::text = current_setting('tenant_level_security.tenant_id'))
-  WITH CHECK (tenant_id::text = current_setting('tenant_level_security.tenant_id'))
+  USING (tenant_id = NULLIF(current_setting('tenant_level_security.tenant_id'), '')::integer)
+  WITH CHECK (tenant_id = NULLIF(current_setting('tenant_level_security.tenant_id'), '')::integer)
 ```
 
 In the table in which the policy is created, only the rows that match the current setting of `tenant_level_security.tenant_id` can be referenced. This value is set by `TenantLevelSecurity.with` etc.

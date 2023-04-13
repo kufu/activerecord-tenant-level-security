@@ -41,5 +41,7 @@ RSpec.configure do |config|
     # Delete all fixtures
     Employee.delete_all
     Tenant.delete_all
+    UUIDEmployee.delete_all
+    UUIDTenant.delete_all
   end
 end
