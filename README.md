@@ -124,6 +124,12 @@ end
 
 The middleware propagates the current tenant to the job through the session. This allows RLS to be enabled even within workers.
 
+## Multiple Databases
+
+Active Record 6+ adds support for [multiple databases](https://guides.rubyonrails.org/active_record_multiple_databases.html). Note that when using multiple databases with this gem, you need to explicitly switch when connecting other databases.
+
+In multiple databases, Active Record creates a connection pool for each connection, but `TenantLevelSecurity.switch` only switches for the current connection.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
