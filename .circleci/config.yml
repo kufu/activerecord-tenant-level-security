@@ -11,6 +11,8 @@ jobs:
         type: string
     docker:
       - image: << parameters.ruby >>
+        environment:
+          BUNDLE_GEMFILE: gemfiles/<< parameters.rails >>.gemfile
       - image: cimg/<< parameters.postgres >>
         environment:
           POSTGRES_HOST_AUTH_METHOD: trust
@@ -18,8 +20,7 @@ jobs:
       - checkout
       - run: gem install bundler
       - run: bundle install
-      - run: bundle exec appraisal << parameters.rails >> bundle install
-      - run: bundle exec appraisal << parameters.rails >> rspec
+      - run: bundle exec rspec
 
 workflows:
   all-tests:
@@ -27,6 +28,6 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby: ['ruby:2.7', 'ruby:3.0', 'ruby:3.1']
-              rails: ['rails-6.0', 'rails-6.1', 'rails-7.0']
-              postgres: ['postgres:11.13', 'postgres:12.9', 'postgres:13.5', 'postgres:14.1']
+              ruby: ['ruby:3.0', 'ruby:3.1', 'ruby:3.2']
+              rails: ['rails_6.0', 'rails_6.1', 'rails_7.0']
+              postgres: ['postgres:11.19', 'postgres:12.14', 'postgres:13.10', 'postgres:14.7', 'postgres:15.2']
