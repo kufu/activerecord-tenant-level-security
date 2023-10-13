@@ -29,5 +29,5 @@ workflows:
           matrix:
             parameters:
               ruby: ['ruby:3.0', 'ruby:3.1', 'ruby:3.2']
-              rails: ['rails_6.0', 'rails_6.1', 'rails_7.0']
-              postgres: ['postgres:11.19', 'postgres:12.14', 'postgres:13.10', 'postgres:14.7', 'postgres:15.2']
+              rails: ['rails_6.1', 'rails_7.0', 'rails_7.1']
+              postgres: ['postgres:11.21', 'postgres:12.16', 'postgres:13.12', 'postgres:14.9', 'postgres:15.4']

@@ -24,12 +24,11 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "activerecord", ">= 6.0"
-  spec.add_dependency "activesupport", ">= 6.0"
+  spec.add_dependency "activerecord", ">= 6.1"
+  spec.add_dependency "activesupport", ">= 6.1"
   spec.add_dependency "pg", ">= 1.0"
 
   spec.add_development_dependency "bundler", ">= 2.0"
   spec.add_development_dependency "rake", ">= 10.0"
   spec.add_development_dependency "rspec", ">= 3.0"
-  spec.add_development_dependency "appraisal", "~> 2.4"
 end
