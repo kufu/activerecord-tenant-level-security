@@ -119,6 +119,10 @@ Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
     chain.add TenantLevelSecurity::Sidekiq::Middleware::Server
   end
+
+  config.client_middleware do |chain|
+    chain.add TenantLevelSecurity::Sidekiq::Middleware::Client
+  end
 end
 ```
 
