@@ -28,6 +28,6 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby: ['ruby:3.0', 'ruby:3.1', 'ruby:3.2']
+              ruby: ['ruby:3.1', 'ruby:3.2', 'ruby:3.3']
               rails: ['rails_6.1', 'rails_7.0', 'rails_7.1']
-              postgres: ['postgres:11.21', 'postgres:12.16', 'postgres:13.12', 'postgres:14.9', 'postgres:15.4']
+              postgres: ['postgres:12.17', 'postgres:13.13', 'postgres:14.10', 'postgres:15.5', 'postgres:16.1']
