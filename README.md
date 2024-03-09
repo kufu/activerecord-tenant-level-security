@@ -55,7 +55,7 @@ class CreateEmployee < ActiveRecord::Migration[6.0]
 end
 ```
 
-When testing, be aware of the database user you are connecting to. The default user `postgres` has the `BYPASSRLS` attribute and therefore bypass the RLS. You must create a user who does not have these privileges in order for your application to connect.
+When experimenting, be aware of the database user you are trying to connect with. The default user `postgres` has the `BYPASSRLS` attribute and therefore bypasses the RLS. You must create a user who does not have these privileges in order for your application to connect.
 
 If you want to use this gem, you first need to register a callback which gets the current tenant. This callback is invoked when checking out a new connection from a connection pool. Create an initializer and tell how it should resolve the current tenant like the following:
 
@@ -133,6 +133,57 @@ The middleware propagates the current tenant to the job through the session. Thi
 Active Record 6+ adds support for [multiple databases](https://guides.rubyonrails.org/active_record_multiple_databases.html). Note that when using multiple databases with this gem, you need to explicitly switch when connecting other databases.
 
 In multiple databases, Active Record creates a connection pool for each connection, but `TenantLevelSecurity.switch` only switches for the current connection.
+
+## Testing with Rails Fixtures
+
+When testing a Rails app with multiple tenants, you might have fixtures for different tenants that need loading into
+your database. However, Row-Level Security (RLS) might block this because it restricts data access. In order to bypass
+RLS for loading these fixtures, you need to use a special database configuration.
+
+In your database configuration in `config/database.yml`, add a `bypass_rls` cd config. This must use a superuser
+database account, which can load fixtures without RLS restrictions. Do not forget to set `database_tasks: false` to
+prevent Rails from messing with your primary database during setup or teardown tasks.
+
+```yml
+# config/database.yml
+test:
+  primary:
+    <<: *default
+    database: ...
+    username: non_super_user_without_bypass_rls
+  bypass_rls:
+    <<: *default
+    database: ...
+    database_tasks: false # So that the primary db is not re-created or dropped when running rake db:create or db:drop.
+    username: postgres    # This user must have the superuser privileges.
+```
+
+Then in your test setup in `test/test_helper.rb`, make sure to use the `bypass_rls` configuration for loading fixtures.
+This involves connecting to the database with superuser privileges before running tests, especially important for
+parallel tests to ensure each test process works with the correct database instance.
+
+```ruby
+# test/test_helper.rb
+
+# Set up the `test_setup` role so we can utilize the `bypass_rls` config:
+ActiveRecord::Base.connects_to database: { test_setup: :bypass_rls }
+
+class ActiveSupport::TestCase
+  # When running the tests in parallel, Rails automatically updates the primary db config but not the configs with
+  # the `database_tasks: false` option. We need to ensure that the `bypass_rls` config also points to the same db as
+  # the `primary` config.
+  parallelize_setup do |index|
+    ActiveRecord::Base.configurations.configs_for(env_name: "test", include_hidden: true).each do |config|
+      config._database = "#{config.database}-#{index}" unless config.database.end_with?("-#{index}")
+    end
+  end
+
+  # Run setup_fixtures in the test setup to bypass RLS:
+  def setup_fixtures
+    ActiveRecord::Base.connected_to(role: :test_setup) { super }
+  end
+end
+```
 
 ## Development
 
