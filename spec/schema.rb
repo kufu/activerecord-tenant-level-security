@@ -23,6 +23,18 @@ ActiveRecord::Schema.define(version: 1) do
   end
 
   create_policy :uuid_employees
+
+  # Create tables for not tenant_id
+  create_table :companies, force: true do |t|
+    t.string :name
+  end
+
+  create_table :company_employees, force: true do |t|
+    t.integer :company_id
+    t.string :name
+  end
+
+  create_policy :company_employees, column_name: 'company_id'
 end
 
 class Tenant < ActiveRecord::Base
@@ -39,4 +51,12 @@ end
 
 class UUIDEmployee < ActiveRecord::Base
   belongs_to :tenant, class_name: 'UUIDTenant', foreign_key: :tenant_id
+end
+
+class Company < ActiveRecord::Base
+  has_many :employees, class_name: 'CompanyEmployee', foreign_key: :company_id
+end
+
+class CompanyEmployee < ActiveRecord::Base
+  belongs_to :company
 end

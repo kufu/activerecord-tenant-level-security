@@ -43,5 +43,7 @@ RSpec.configure do |config|
     Tenant.delete_all
     UUIDEmployee.delete_all
     UUIDTenant.delete_all
+    Company.delete_all
+    CompanyEmployee.delete_all
   end
 end
