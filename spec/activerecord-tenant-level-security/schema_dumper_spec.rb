@@ -11,6 +11,7 @@ RSpec.describe TenantLevelSecurity::SchemaDumper do
 
       it "outputs create_policy lines" do
         expect(definition).to be_include("create_policy")
+        expect(definition).to be_include("partition_key: \"company_id\"")
       end
     end
   end

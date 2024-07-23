@@ -19,7 +19,8 @@ module TenantLevelSecurity
     def policies_in_database
       query = <<~SQL
         SELECT
-          tablename
+          tablename,
+          qual
         FROM
           pg_policies
         WHERE
@@ -28,23 +29,37 @@ module TenantLevelSecurity
           tablename;
       SQL
       results = ActiveRecord::Base.connection.execute(query)
-      table_names = results.map { |x| x["tablename"] }
+      results.map do |result|
+        table_name = result["tablename"]
+        partition_key = convert_qual_to_partition_key(result["qual"])
+        Policy.new(table_name: table_name, partition_key: partition_key)
+      end
+    end
 
-      table_names.map { |t| Policy.new(t) }
+    private
+
+    def convert_qual_to_partition_key(qual)
+      matched = qual.match(/^\((.+?) = /)
+      matched ? matched[1] : nil
     end
 
     class Policy
-      def initialize(table_name)
+      DEFAULT_PARTITION_KEY = 'tenant_id'
+
+      def initialize(table_name:, partition_key:)
         @table_name = table_name
+        @partition_key = partition_key
       end
 
       def to_schema
-        %(  create_policy "#{table_name}")
+        schema = %(  create_policy "#{table_name}")
+        schema += %(, partition_key: "#{partition_key}") if partition_key && partition_key != DEFAULT_PARTITION_KEY
+        schema
       end
 
       private
 
-      attr_reader :table_name
+      attr_reader :table_name, :partition_key
     end
   end
 end
