@@ -34,7 +34,7 @@ ActiveRecord::Schema.define(version: 1) do
     t.string :name
   end
 
-  create_policy :company_employees, column_name: 'company_id'
+  create_policy :company_employees, partition_key: 'company_id'
 end
 
 class Tenant < ActiveRecord::Base
