@@ -1,4 +1,5 @@
 # activerecord-tenant-level-security
+
 [![CircleCI](https://circleci.com/gh/kufu/activerecord-tenant-level-security/tree/master.svg?style=svg)](https://circleci.com/gh/kufu/activerecord-tenant-level-security/tree/master)
 [![gem-version](https://img.shields.io/gem/v/activerecord-tenant-level-security.svg)](https://rubygems.org/gems/activerecord-tenant-level-security)
 [![License](https://img.shields.io/github/license/kufu/activerecord-tenant-level-security.svg?color=blue)](https://github.com/kufu/activerecord-tenant-level-security/blob/master/LICENSE.txt)
@@ -51,6 +52,22 @@ class CreateEmployee < ActiveRecord::Migration[6.0]
     end
 
     create_policy :employees
+  end
+end
+```
+
+By default, this method uses the `tenant_id` column as the partition key.  
+To create a policy using a custom column as the partition key, specify the `partition_key` option as shown below:
+
+```ruby
+class CreateEmployee < ActiveRecord::Migration[6.0]
+  def change
+    create_table :employees do |t|
+      t.integer :company_id
+      t.string :name
+    end
+
+    create_policy :employees, partition_key: 'company_id'
   end
 end
 ```
