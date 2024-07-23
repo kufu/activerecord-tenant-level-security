@@ -21,6 +21,10 @@ Or install it yourself as:
 
     $ gem install activerecord-tenant-level-security
 
+Next, run the generator:
+
+    rails generate tenant_level_security:install
+
 ## Usage
 
 The activerecord-tenant-level-security provides an API for applying [PostgreSQL Row Level Security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html) (RLS) as follows:
