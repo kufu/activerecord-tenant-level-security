@@ -51,23 +51,11 @@ class CreateEmployee < ActiveRecord::Migration[6.0]
       t.string :name
     end
 
+    # By default, "tenant_id" is used as a partition key.
     create_policy :employees
-  end
-end
-```
 
-By default, this method uses the `tenant_id` column as the partition key.  
-To create a policy using a custom column as the partition key, specify the `partition_key` option as shown below:
-
-```ruby
-class CreateEmployee < ActiveRecord::Migration[6.0]
-  def change
-    create_table :employees do |t|
-      t.integer :company_id
-      t.string :name
-    end
-
-    create_policy :employees, partition_key: 'company_id'
+    # You can also use a column other than "tenant_id" by passing the "partition_key" option.
+    # create_policy :employees, partition_key: 'company_id'
   end
 end
 ```
