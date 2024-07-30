@@ -28,7 +28,7 @@ module TenantLevelSecurity
 
     private
     def get_tenant_id_data_type(table_name, partition_key)
-      tenant_id_column = columns(table_name).find { |column| column.name == partition_key }
+      tenant_id_column = columns(table_name).find { |column| column.name == partition_key.to_s }
       raise "#{partition_key} column is missing in #{table_name}" if tenant_id_column.nil?
 
       tenant_id_column.sql_type

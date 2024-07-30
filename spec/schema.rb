@@ -36,7 +36,18 @@ ActiveRecord::Schema.define(version: 1) do
     t.string :name
   end
 
-  create_policy :company_employees, partition_key: 'company_id'
+  create_table :company_tenants, force: true do |t|
+    t.integer :company_id
+    t.string :name
+  end
+
+  create_policy :company_employees, partition_key: :company_id
+  remove_policy :company_employees, partition_key: :company_id # test remove_policy
+  create_policy :company_employees, partition_key: :company_id
+
+  create_policy :company_tenants, partition_key: 'company_id'
+  remove_policy :company_tenants # test remove_policy without partition_key
+  create_policy :company_tenants, partition_key: 'company_id'
 end
 
 class Tenant < ActiveRecord::Base
@@ -57,8 +68,13 @@ end
 
 class Company < ActiveRecord::Base
   has_many :employees, class_name: 'CompanyEmployee', foreign_key: :company_id
+  has_many :tenants, class_name: 'CompanyTenant', foreign_key: :company_id
 end
 
 class CompanyEmployee < ActiveRecord::Base
+  belongs_to :company
+end
+
+class CompanyTenant < ActiveRecord::Base
   belongs_to :company
 end

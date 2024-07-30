@@ -55,7 +55,8 @@ class CreateEmployee < ActiveRecord::Migration[6.0]
     create_policy :employees
 
     # You can also use a column other than "tenant_id" by passing the "partition_key" option.
-    # create_policy :employees, partition_key: 'company_id'
+    # create_policy :employees, partition_key: :company_id
+    # And you can also specify the partition key as a string.
   end
 end
 ```
