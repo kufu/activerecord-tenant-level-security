@@ -23,6 +23,8 @@ ActiveRecord::Schema.define(version: 1) do
   end
 
   create_policy :uuid_employees
+  remove_policy :uuid_employees # test remove_policy
+  create_policy :uuid_employees
 
   # Create tables for not tenant_id
   create_table :companies, force: true do |t|

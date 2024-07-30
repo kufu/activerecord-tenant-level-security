@@ -16,7 +16,7 @@ module TenantLevelSecurity
       SQL
     end
 
-    def remove_policy(table_name, _)
+    def remove_policy(table_name, *args)
       execute <<~SQL
         ALTER TABLE #{table_name} NO FORCE ROW LEVEL SECURITY;
         ALTER TABLE #{table_name} DISABLE ROW LEVEL SECURITY;
