@@ -48,8 +48,6 @@ module TenantLevelSecurity
     end
 
     class Policy
-      DEFAULT_PARTITION_KEY = 'tenant_id'
-
       def initialize(table_name:, partition_key:)
         @table_name = table_name
         @partition_key = partition_key
@@ -57,7 +55,9 @@ module TenantLevelSecurity
 
       def to_schema
         schema = %(  create_policy "#{table_name}")
-        schema += %(, partition_key: "#{partition_key}") if partition_key && partition_key != DEFAULT_PARTITION_KEY
+        if partition_key && partition_key != TenantLevelSecurity::DEFAULT_PARTITION_KEY
+          schema += %(, partition_key: "#{partition_key}")
+        end
         schema
       end
 

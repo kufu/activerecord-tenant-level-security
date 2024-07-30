@@ -1,6 +1,6 @@
 module TenantLevelSecurity
   module SchemaStatements
-    def create_policy(table_name, partition_key: 'tenant_id')
+    def create_policy(table_name, partition_key: TenantLevelSecurity::DEFAULT_PARTITION_KEY)
       execute <<~SQL
         ALTER TABLE #{table_name} ENABLE ROW LEVEL SECURITY;
         ALTER TABLE #{table_name} FORCE ROW LEVEL SECURITY;
