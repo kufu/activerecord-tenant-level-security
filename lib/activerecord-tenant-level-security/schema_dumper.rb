@@ -55,7 +55,7 @@ module TenantLevelSecurity
 
       def to_schema
         schema = %(  create_policy "#{table_name}")
-        if partition_key && partition_key != TenantLevelSecurity::DEFAULT_PARTITION_KEY
+        if partition_key != TenantLevelSecurity::DEFAULT_PARTITION_KEY
           schema += %(, partition_key: "#{partition_key}")
         end
         schema
