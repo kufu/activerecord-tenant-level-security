@@ -42,7 +42,7 @@ module TenantLevelSecurity
       matched = qual.match(/^\((.+?) = /)
       # This error can occur if the specification of the 'tenant_policy' in PostgreSQL
       #   or the 'create_policy' method changes
-      raise "Failed to parse partition key from 'qual': #{qual}" unless matched
+      raise "Failed to parse partition key from 'pg_policies.qual': #{qual}" unless matched
 
       matched[1]
     end
