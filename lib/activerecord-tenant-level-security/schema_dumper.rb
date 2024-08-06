@@ -19,7 +19,8 @@ module TenantLevelSecurity
     def policies_in_database
       query = <<~SQL
         SELECT
-          tablename
+          tablename,
+          qual
         FROM
           pg_policies
         WHERE
@@ -28,23 +29,41 @@ module TenantLevelSecurity
           tablename;
       SQL
       results = ActiveRecord::Base.connection.execute(query)
-      table_names = results.map { |x| x["tablename"] }
+      results.map do |result|
+        table_name = result["tablename"]
+        partition_key = convert_qual_to_partition_key(result["qual"])
+        Policy.new(table_name: table_name, partition_key: partition_key)
+      end
+    end
 
-      table_names.map { |t| Policy.new(t) }
+    private
+
+    def convert_qual_to_partition_key(qual)
+      matched = qual.match(/^\((.+?) = /)
+      # This error can occur if the specification of the 'tenant_policy' in PostgreSQL
+      #   or the 'create_policy' method changes
+      raise "Failed to parse partition key from 'pg_policies.qual': #{qual}" unless matched
+
+      matched[1]
     end
 
     class Policy
-      def initialize(table_name)
+      def initialize(table_name:, partition_key:)
         @table_name = table_name
+        @partition_key = partition_key
       end
 
       def to_schema
-        %(  create_policy "#{table_name}")
+        schema = %(  create_policy "#{table_name}")
+        if partition_key != TenantLevelSecurity::DEFAULT_PARTITION_KEY
+          schema += %(, partition_key: "#{partition_key}")
+        end
+        schema
       end
 
       private
 
-      attr_reader :table_name
+      attr_reader :table_name, :partition_key
     end
   end
 end

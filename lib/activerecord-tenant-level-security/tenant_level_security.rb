@@ -1,4 +1,6 @@
 module TenantLevelSecurity
+  DEFAULT_PARTITION_KEY = 'tenant_id'.freeze
+
   class << self
     # The current_tenant_id sets the default tenant from the outside.
     # Be sure to register in advance as `TenantLevelSecurity.current_tenant_id { id }` with initializers.

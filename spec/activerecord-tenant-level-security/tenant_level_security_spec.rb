@@ -3,12 +3,18 @@ RSpec.describe TenantLevelSecurity do
   let(:tenant2) { Tenant.create!(name: 'Tenant2') }
   let(:uuid_tenant1) { UUIDTenant.create!(name: 'Tenant3') }
   let(:uuid_tenant2) { UUIDTenant.create!(name: 'Tenant4') }
+  let(:company1) { Company.create!(name: 'Company1') }
+  let(:company2) { Company.create!(name: 'Company2') }
 
   before do
     Employee.create!(name: 'Jane', tenant: tenant1)
     Employee.create!(name: 'Tom', tenant: tenant2)
     UUIDEmployee.create!(name: 'Kenny', tenant: uuid_tenant1)
     UUIDEmployee.create!(name: 'Wendy', tenant: uuid_tenant2)
+    CompanyEmployee.create!(name: 'Alice', company: company1)
+    CompanyEmployee.create!(name: 'Bob', company: company2)
+    CompanyTenant.create!(name: 'James', company: company1)
+    CompanyTenant.create!(name: 'Durant', company: company2)
   end
 
   describe '.switch!' do
@@ -43,6 +49,42 @@ RSpec.describe TenantLevelSecurity do
 
         TenantLevelSecurity.switch!(uuid_tenant2.id)
         expect(UUIDEmployee.all).to contain_exactly(have_attributes(name: 'Wendy'))
+      end
+    end
+
+    context 'with company_id' do
+      context 'on company_employees' do
+        it 'returns only employees in the switched company' do
+          expect(CompanyEmployee.count).to eq 2
+
+          establish_connection(as: :app)
+
+          # Nothing is allowed by default
+          expect(CompanyEmployee.count).to eq 0
+
+          TenantLevelSecurity.switch!(company1.id)
+          expect(CompanyEmployee.all).to contain_exactly(have_attributes(name: 'Alice'))
+
+          TenantLevelSecurity.switch!(company2.id)
+          expect(CompanyEmployee.all).to contain_exactly(have_attributes(name: 'Bob'))
+        end
+      end
+
+      context 'on company_tenants' do
+        it 'returns only tenants in the switched company' do
+          expect(CompanyTenant.count).to eq 2
+
+          establish_connection(as: :app)
+
+          # Nothing is allowed by default
+          expect(CompanyTenant.count).to eq 0
+
+          TenantLevelSecurity.switch!(company1.id)
+          expect(CompanyTenant.all).to contain_exactly(have_attributes(name: 'James'))
+
+          TenantLevelSecurity.switch!(company2.id)
+          expect(CompanyTenant.all).to contain_exactly(have_attributes(name: 'Durant'))
+        end
       end
     end
 
