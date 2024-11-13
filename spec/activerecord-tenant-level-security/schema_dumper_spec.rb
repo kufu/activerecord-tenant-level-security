@@ -3,7 +3,8 @@ RSpec.describe TenantLevelSecurity::SchemaDumper do
     describe ".dump" do
       let(:definition) do
         io = StringIO.new
-        ActiveRecord::SchemaDumper.dump(ActiveRecord::Base.connection, io)
+        from = ActiveRecord.gem_version > Gem::Version.new("7.2.0") ? ActiveRecord::Base.connection_pool : ActiveRecord::Base.connection
+        ActiveRecord::SchemaDumper.dump(from, io)
         io.rewind
 
         io.read

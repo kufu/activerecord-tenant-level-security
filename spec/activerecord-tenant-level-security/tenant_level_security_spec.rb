@@ -154,7 +154,7 @@ RSpec.describe TenantLevelSecurity do
 
       expect(TenantLevelSecurity.current_session_tenant_id).to eq ''
       # Returns all active connections so that checkout occurs
-      ActiveRecord::Base.clear_active_connections!
+      ActiveRecord::Base.connection_handler.clear_active_connections!
 
       # Set default tenant
       TenantLevelSecurity.current_tenant_id { tenant1.id }
