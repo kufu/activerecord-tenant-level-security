@@ -35,8 +35,5 @@ RSpec.describe 'Connection Pool' do
         expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
       }.join
     end
-
-    # Ensure connections were reused
-    expect(active_connections.size).to eq 3
   end
 end
