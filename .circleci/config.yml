@@ -28,23 +28,6 @@ workflows:
       - test:
           matrix:
             parameters:
-              ruby: ['ruby:3.1', 'ruby:3.2', 'ruby:3.3']
-              rails: ['rails_7.0', 'rails_7.1', 'rails_7.2', 'rails_8.0']
-              postgres: ['postgres:13.16', 'postgres:14.13', 'postgres:15.8', 'postgres:16.4', 'postgres:17.0']
-            exclude:
-              # Rails 8.0 requires Ruby >= 3.2.0
-              - ruby: 'ruby:3.1'
-                rails: 'rails_8.0'
-                postgres: 'postgres:13.16'
-              - ruby: 'ruby:3.1'
-                rails: 'rails_8.0'
-                postgres: 'postgres:14.13'
-              - ruby: 'ruby:3.1'
-                rails: 'rails_8.0'
-                postgres: 'postgres:15.8'
-              - ruby: 'ruby:3.1'
-                rails: 'rails_8.0'
-                postgres: 'postgres:16.4'
-              - ruby: 'ruby:3.1'
-                rails: 'rails_8.0'
-                postgres: 'postgres:17.0'
+              ruby: ['ruby:3.2', 'ruby:3.3', 'ruby:3.4']
+              rails: ['rails_7.1', 'rails_7.2', 'rails_8.0']
+              postgres: ['postgres:13.21', 'postgres:14.18', 'postgres:15.13', 'postgres:16.9', 'postgres:17.5']
