@@ -2,8 +2,8 @@
 
 ### Breaking Changes
 
-- [#27](https://github.com/kufu/activerecord-tenant-level-security/pull/27): CI against Ruby 3.4, drop Ruby 3.1, Rails 7.1 
-  - Drop support for Ruby 3.1 and Rails 7.1
+- [#27](https://github.com/kufu/activerecord-tenant-level-security/pull/27): CI against Ruby 3.4, drop Ruby 3.1, Rails 7.0 
+  - Drop support for Ruby 3.1 and Rails 7.0
 
 ## v0.3.0 (2024-08-06)
 
