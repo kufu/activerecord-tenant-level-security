@@ -28,6 +28,31 @@ RSpec.describe 'Sidekiq' do
         expect(job).to be_empty
       end
     end
+
+    it 'does not call current_session_tenant_id when tenant_level_security already exists in job' do
+      establish_connection(as: :app)
+      TenantLevelSecurity.switch!(tenant1.id)
+
+      job = { 'tenant_level_security' => { id: tenant2.id.to_s } }
+      expect(TenantLevelSecurity).not_to receive(:current_session_tenant_id)
+
+      client.call(double, job, 'default', double) do
+        # job should retain the original tenant_level_security value
+        expect(job['tenant_level_security']).to eq({ id: tenant2.id.to_s })
+      end
+    end
+
+    it 'does not overwrite existing tenant_level_security in job' do
+      establish_connection(as: :app)
+      TenantLevelSecurity.switch!(tenant1.id)
+
+      original_tenant_data = { id: 'original-tenant-id' }
+      job = { 'tenant_level_security' => original_tenant_data }
+
+      client.call(double, job, 'default', double) do
+        expect(job['tenant_level_security']).to eq(original_tenant_data)
+      end
+    end
   end
 
   describe 'server middleware' do
