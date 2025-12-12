@@ -1,3 +1,11 @@
+## v0.5.0 (2025-12-12)
+
+### Breaking Changes
+- [#34](https://github.com/kufu/activerecord-tenant-level-security/pull/34): Drop support for Ruby 3.1 and Rails 7.0 
+
+### Enhancements
+- [#33](https://github.com/kufu/activerecord-tenant-level-security/pull/33): Cache tenant_id to reduce the risk of network errors
+
 ## v0.4.0 (2025-05-23)
 
 ### Breaking Changes
