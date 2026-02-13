@@ -34,13 +34,14 @@ module Helpers
   end
 
   def create_app_role
-    begin
+    role_exists = ActiveRecord::Base.connection.execute(<<~SQL).cmd_tuples.positive?
+      SELECT 1 FROM pg_roles WHERE rolname = 'activerecord_tenant_level_security_test';
+    SQL
+
+    unless role_exists
       ActiveRecord::Base.connection.execute(<<~SQL)
-        CREATE ROLE activerecord_tenant_level_security_test LOGIN;
+        CREATE ROLE activerecord_tenant_level_security_test LOGIN PASSWORD 'postgres';
       SQL
-    rescue ActiveRecord::StatementInvalid => exn
-      raise unless exn.cause.is_a?(PG::DuplicateObject)
-      puts "Role 'activerecord_tenant_level_security_test' already exists"
     end
   end
 
