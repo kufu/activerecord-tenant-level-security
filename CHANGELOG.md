@@ -1,3 +1,8 @@
+## v0.6.0 (2026-03-11)
+
+### Breaking Changes
+- [#37](https://github.com/kufu/activerecord-tenant-level-security/pull/37): Drop support for Ruby 3.2. Add support for Ruby 4.0.
+
 ## v0.5.0 (2025-12-12)
 
 ### Breaking Changes
