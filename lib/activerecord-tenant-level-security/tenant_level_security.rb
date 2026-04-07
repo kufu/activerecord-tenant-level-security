@@ -1,6 +1,19 @@
 module TenantLevelSecurity
   DEFAULT_PARTITION_KEY = 'tenant_id'.freeze
 
+  class TenantContext < ActiveSupport::CurrentAttributes
+    attribute :tenant_id
+
+    def tenant_id=(val)
+      super
+      TenantLevelSecurity.switch_with_connection!(ActiveRecord::Base.connection, val)
+    end
+
+    resets do
+      TenantLevelSecurity.switch_with_connection!(ActiveRecord::Base.connection, nil)
+    end
+  end
+
   class << self
     # The current_tenant_id sets the default tenant from the outside.
     # Be sure to register in advance as `TenantLevelSecurity.current_tenant_id { id }` with initializers.
@@ -14,19 +27,19 @@ module TenantLevelSecurity
       end
     end
 
-    def with(tenant_id)
-      old_tenant_id = current_session_tenant_id
-      return yield if old_tenant_id == tenant_id
-      begin
-        switch! tenant_id
-        yield
-      ensure
-        switch! old_tenant_id
-      end
+    def with(tenant_id, &block)
+      TenantContext.with(tenant_id: tenant_id, &block)
     end
 
     def switch!(tenant_id)
-      switch_with_connection!(ActiveRecord::Base.connection, tenant_id)
+      TenantContext.tenant_id = tenant_id
+    end
+
+    def switch_current_tenant_context!(conn = ActiveRecord::Base.connection)
+      TenantLevelSecurity.switch_with_connection!(
+        conn,
+        TenantLevelSecurity::TenantContext.tenant_id || TenantLevelSecurity.current_tenant_id
+      )
     end
 
     def switch_with_connection!(conn, tenant_id)

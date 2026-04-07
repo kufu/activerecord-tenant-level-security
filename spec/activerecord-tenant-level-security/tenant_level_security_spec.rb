@@ -17,6 +17,20 @@ RSpec.describe TenantLevelSecurity do
     CompanyTenant.create!(name: 'Durant', company: company2)
   end
 
+  describe TenantLevelSecurity::TenantContext do
+    context "on reset" do
+      it "resets RLS context to default" do
+        establish_connection(as: :app)
+
+        TenantLevelSecurity.switch!(tenant1.id)
+        expect(TenantLevelSecurity.current_session_tenant_id).to eq(tenant1.id.to_s)
+
+        TenantLevelSecurity::TenantContext.reset
+        expect(TenantLevelSecurity.current_session_tenant_id).to eq ''
+      end
+    end
+  end
+
   describe '.switch!' do
     context 'with integer tenant_id' do
       it 'returns only employees in the switched tenant' do
@@ -142,6 +156,35 @@ RSpec.describe TenantLevelSecurity do
         end
 
         expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+      end
+    end
+
+    context "with connection reconnection" do
+      def remote_disconnect(connection)
+        # Connection was left in a bad state, need to reconnect to simulate fresh disconnect
+        connection.verify! if connection.instance_variable_get(:@raw_connection).status == ::PG::CONNECTION_BAD
+        unless connection.instance_variable_get(:@raw_connection).transaction_status == ::PG::PQTRANS_INTRANS
+          connection.instance_variable_get(:@raw_connection).async_exec("begin")
+        end
+        connection.instance_variable_get(:@raw_connection).async_exec("set idle_in_transaction_session_timeout = '10ms'")
+        sleep 0.05
+      end
+
+      it "set current tenant id" do
+        establish_connection(as: :app)
+
+        TenantLevelSecurity.with(tenant1.id) do
+          remote_disconnect(ActiveRecord::Base.connection)
+          expect(Employee.all).to contain_exactly(have_attributes(name: 'Jane'))
+        end
+
+        TenantLevelSecurity.with(tenant2.id) do
+          remote_disconnect(ActiveRecord::Base.connection)
+          expect(Employee.all).to contain_exactly(have_attributes(name: 'Tom'))
+        end
+
+        remote_disconnect(ActiveRecord::Base.connection)
+        expect(Employee.count).to eq 0
       end
     end
   end
