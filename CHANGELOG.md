@@ -1,3 +1,8 @@
+## v0.7.0 (2026-04-07)
+
+### Enhancements
+- [#35](https://github.com/kufu/activerecord-tenant-level-security/pull/35): Preserve RLS context across automatic reconnections
+
 ## v0.6.0 (2026-03-11)
 
 ### Breaking Changes
