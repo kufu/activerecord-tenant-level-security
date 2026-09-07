@@ -1,3 +1,8 @@
+## v0.8.0 (2026-09-07)
+
+### Breaking Changes
+- [#39](https://github.com/kufu/activerecord-tenant-level-security/pull/39): Drop support for Rails 7.2 (EOL)
+
 ## v0.7.0 (2026-04-07)
 
 ### Enhancements
