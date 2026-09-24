@@ -1,0 +1,2 @@
+Description:
+    Copies tenant-level-security configuration file to your application's initializer directory.
