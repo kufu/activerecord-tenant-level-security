@@ -140,6 +140,19 @@ Active Record 6+ adds support for [multiple databases](https://guides.rubyonrail
 
 In multiple databases, Active Record creates a connection pool for each connection, but `TenantLevelSecurity.switch` only switches for the current connection.
 
+The session is switched on all connections by default. If you use other databases together, such as MySQL which rejects the SET statement,
+set `tenant_level_security: false` to them in `config/database.yml`:
+
+```yml
+production:
+  primary:
+    adapter: postgresql
+    tenant_level_security: true
+  legacy:
+    adapter: mysql2
+    tenant_level_security: false # Do not switch the session on this database
+```
+
 ## Testing with Rails Fixtures
 
 When testing a Rails app with multiple tenants, you might have fixtures for different tenants that need loading into

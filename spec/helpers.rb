@@ -7,7 +7,7 @@ module Helpers
     }
   end
 
-  def establish_connection(as:, to: :app, pool: 5)
+  def establish_connection(as:, to: :app, pool: 5, **config)
     database = case to
                when :system
                  'postgres'
@@ -26,7 +26,7 @@ module Helpers
                  raise "Unexpected value for 'as': #{as}"
                end
 
-    ActiveRecord::Base.establish_connection(dbconfig.merge(database: database, username: username, pool: pool))
+    ActiveRecord::Base.establish_connection(dbconfig.merge(database: database, username: username, pool: pool, **config))
   end
 
   def recreate_test_database

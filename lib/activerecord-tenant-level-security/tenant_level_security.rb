@@ -42,7 +42,13 @@ module TenantLevelSecurity
       )
     end
 
+    def enabled_for?(db_config)
+      db_config.configuration_hash[:tenant_level_security] != false
+    end
+
     def switch_with_connection!(conn, tenant_id)
+      return unless enabled_for?(conn.pool.db_config)
+
       conn.clear_query_cache
 
       if tenant_id.present?

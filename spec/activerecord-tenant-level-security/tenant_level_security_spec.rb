@@ -221,4 +221,45 @@ RSpec.describe TenantLevelSecurity do
       expect(TenantLevelSecurity.current_session_tenant_id).to eq tenant2.id.to_s
     end
   end
+
+  describe '.enabled_for?' do
+    def db_config(**config)
+      ActiveRecord::DatabaseConfigurations::HashConfig.new('test', 'primary', dbconfig.merge(config))
+    end
+
+    it 'returns true without tenant_level_security in the database config' do
+      expect(TenantLevelSecurity.enabled_for?(db_config)).to be true
+    end
+
+    it 'returns true with tenant_level_security: true' do
+      expect(TenantLevelSecurity.enabled_for?(db_config(tenant_level_security: true))).to be true
+    end
+
+    it 'returns false with tenant_level_security: false' do
+      expect(TenantLevelSecurity.enabled_for?(db_config(tenant_level_security: false))).to be false
+    end
+  end
+
+  describe 'connections with tenant_level_security: false' do
+    it 'does not switch the session to the tenant' do
+      establish_connection(as: :app, tenant_level_security: false)
+
+      TenantLevelSecurity.switch!(tenant1.id)
+      expect(TenantLevelSecurity.current_session_tenant_id).to be_nil
+
+      TenantLevelSecurity.with(tenant2.id) do
+        expect(TenantLevelSecurity.current_session_tenant_id).to be_nil
+      end
+    end
+
+    it 'does not switch the session when checking out a connection' do
+      establish_connection(as: :app, tenant_level_security: false)
+      TenantLevelSecurity.current_tenant_id { tenant1.id }
+
+      # Returns all active connections so that checkout occurs
+      ActiveRecord::Base.connection_handler.clear_active_connections!
+
+      expect(TenantLevelSecurity.current_session_tenant_id).to be_nil
+    end
+  end
 end
